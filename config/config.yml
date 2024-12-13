@@ -1,0 +1,12 @@
+port: 3000
+
+core:
+  SECRET_KEY: "eOJHCKr/WhNrp7n9DG9qrgbRmIYXDPEvxTWyH2JPWG0="
+  SWAGGER_USER: "swagger"
+  SWAGGER_PASSWORD: "A4ileRNiSuYUPye1"
+
+mongo:
+  uri: "mongodb://root:Ia1A1tjp3Sb12ozTgpn0iJ0kM8sCfaX4@localhost:27017"
+  dbName: "simple"
+  user_collection: "users"
+  post_collection: "posts"

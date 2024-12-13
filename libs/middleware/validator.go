@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"go-simple/src/exception"
+	"go-simple-api/libs/exception"
 	"net/http"
 )
 

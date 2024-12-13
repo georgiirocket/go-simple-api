@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"go-simple/src/dto"
+	"go-simple-api/libs/models"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"time"
@@ -31,12 +31,12 @@ func VerifyPassword(password string, hash string) bool {
 }
 
 // CreateAuthData . access 3h refresh 7days
-func CreateAuthData(userId string, role string) (*dto.AuthData, error) {
+func CreateAuthData(userId string, role string) (*models.AuthData, error) {
 	accessExpire := time.Now().Add(time.Duration(3) * time.Hour).Unix()
 	expiresIn := time.Now().Add(time.Duration(168) * time.Hour).Unix()
-	authData := dto.AuthData{AccessExpire: accessExpire, ExpiresIn: expiresIn}
+	authData := models.AuthData{AccessExpire: accessExpire, ExpiresIn: expiresIn}
 
-	accessToken, errAccessToken := createAccessToken(&dto.AuthPayload{UserId: userId, Role: role, TokenType: AccessTokenType, Exp: accessExpire})
+	accessToken, errAccessToken := createAccessToken(&models.AuthPayload{UserId: userId, Role: role, TokenType: AccessTokenType, Exp: accessExpire})
 
 	if errAccessToken != nil {
 		return nil, errAccessToken
@@ -46,7 +46,7 @@ func CreateAuthData(userId string, role string) (*dto.AuthData, error) {
 
 	partAccessToken := accessToken[len(accessToken)-8:]
 
-	refreshToken, errRefreshToken := createRefreshToken(&dto.AuthPayloadRefresh{UserId: userId, Role: role, TokenType: RefreshTokenType, Exp: expiresIn, PartAccessToken: partAccessToken})
+	refreshToken, errRefreshToken := createRefreshToken(&models.AuthPayloadRefresh{UserId: userId, Role: role, TokenType: RefreshTokenType, Exp: expiresIn, PartAccessToken: partAccessToken})
 
 	if errRefreshToken != nil {
 		return nil, errRefreshToken
@@ -57,7 +57,7 @@ func CreateAuthData(userId string, role string) (*dto.AuthData, error) {
 	return &authData, nil
 }
 
-func VerifyToken(accessToken string, tokenType string) (*dto.AuthPayload, error) {
+func VerifyToken(accessToken string, tokenType string) (*models.AuthPayload, error) {
 	claims := jwt.MapClaims{}
 
 	token, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -72,7 +72,7 @@ func VerifyToken(accessToken string, tokenType string) (*dto.AuthPayload, error)
 		return nil, errors.New("invalid token type")
 	}
 
-	payload := &dto.AuthPayload{
+	payload := &models.AuthPayload{
 		UserId:    claims["userId"].(string),
 		Role:      claims["role"].(string),
 		TokenType: claims["tokenType"].(string),
@@ -82,7 +82,7 @@ func VerifyToken(accessToken string, tokenType string) (*dto.AuthPayload, error)
 	return payload, nil
 }
 
-func VerifyRefreshToken(refreshToken string, accessToken string) (*dto.AuthPayloadRefresh, error) {
+func VerifyRefreshToken(refreshToken string, accessToken string) (*models.AuthPayloadRefresh, error) {
 	claims := jwt.MapClaims{}
 
 	token, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -97,7 +97,7 @@ func VerifyRefreshToken(refreshToken string, accessToken string) (*dto.AuthPaylo
 		return nil, errors.New("invalid token type")
 	}
 
-	payload := &dto.AuthPayloadRefresh{
+	payload := &models.AuthPayloadRefresh{
 		UserId:          claims["userId"].(string),
 		Role:            claims["role"].(string),
 		TokenType:       claims["tokenType"].(string),
@@ -114,7 +114,7 @@ func VerifyRefreshToken(refreshToken string, accessToken string) (*dto.AuthPaylo
 	return payload, nil
 }
 
-func createAccessToken(auth *dto.AuthPayload) (string, error) {
+func createAccessToken(auth *models.AuthPayload) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userId":    auth.UserId,
@@ -132,7 +132,7 @@ func createAccessToken(auth *dto.AuthPayload) (string, error) {
 	return tokenString, nil
 }
 
-func createRefreshToken(auth *dto.AuthPayloadRefresh) (string, error) {
+func createRefreshToken(auth *models.AuthPayloadRefresh) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userId":          auth.UserId,

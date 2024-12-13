@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-simple/src/exception"
-	"go-simple/src/services"
+	"go-simple-api/libs/exception"
+	"go-simple-api/libs/services"
 	"strings"
 )
 

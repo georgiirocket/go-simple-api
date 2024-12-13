@@ -2,13 +2,13 @@ package exception
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-simple/src/constants"
-	"go-simple/src/dto"
+	"go-simple-api/libs/constants"
+	"go-simple-api/libs/models"
 	"net/http"
 )
 
 func NotFound(context *gin.Context, message string) {
-	errorResponse := dto.ErrorResponse{
+	errorResponse := models.ErrorResponse{
 		Error: constants.NotFoundErrorMessage,
 	}
 
@@ -24,7 +24,7 @@ func NotFound(context *gin.Context, message string) {
 }
 
 func ServerError(context *gin.Context, message string) {
-	errorResponse := dto.ErrorResponse{
+	errorResponse := models.ErrorResponse{
 		Error: constants.ServerErrorMessage,
 	}
 
@@ -40,7 +40,7 @@ func ServerError(context *gin.Context, message string) {
 }
 
 func BadRequestError(context *gin.Context, message string) {
-	errorResponse := dto.ErrorResponse{
+	errorResponse := models.ErrorResponse{
 		Error: constants.BadRequestErrorMessage,
 	}
 
@@ -56,7 +56,7 @@ func BadRequestError(context *gin.Context, message string) {
 }
 
 func AuthError(context *gin.Context, message string) {
-	errorResponse := dto.ErrorResponse{
+	errorResponse := models.ErrorResponse{
 		Error: constants.AuthErrorMessage,
 	}
 

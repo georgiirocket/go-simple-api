@@ -1,4 +1,4 @@
-package dto
+package models
 
 type AuthData struct {
 	AccessToken  string `json:"accessToken"`
