@@ -3,8 +3,12 @@ package server
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-simple-api/cmd/core/auth"
 	"go-simple-api/config"
+	"go-simple-api/docs"
+	"go-simple-api/utils/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
@@ -29,8 +33,13 @@ func NewApp() *App {
 }
 
 func (app *App) Run(port string) error {
+	docs.SwaggerInfo.Title = "Simple backend"
+	docs.SwaggerInfo.Description = "Backend API"
+	docs.SwaggerInfo.Version = "1.0"
+
 	router := gin.Default()
 	router.Use(gin.Recovery(), gin.Logger())
+	router.GET("/swagger/*any", middleware.BaseAuthSwagger(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api")
 

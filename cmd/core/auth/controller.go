@@ -25,6 +25,18 @@ type SignInput struct {
 	Password string `json:"password" validate:"required,min=10"`
 }
 
+// SignUp
+// @Summary get new  tokens
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param request body SignInput true "data"
+// @Success 200 {object} models.UserModel
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/auth/sign-up [post]
 func (c *Controller) SignUp(context *gin.Context) {
 	data, err := helpers.GetContextData[SignInput](context)
 
