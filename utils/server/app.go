@@ -28,16 +28,16 @@ func NewApp() *App {
 	}
 }
 
-func (a *App) Run(port string) error {
+func (app *App) Run(port string) error {
 	router := gin.Default()
 	router.Use(gin.Recovery(), gin.Logger())
 
 	api := router.Group("/api")
 
-	auth.RegisterHTTPEndpoints(api, a.authRepository)
+	auth.RegisterHTTPEndpoints(api, app.authRepository)
 
 	// HTTP Server
-	a.httpServer = &http.Server{
+	app.httpServer = &http.Server{
 		Addr:           ":" + port,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
@@ -46,7 +46,7 @@ func (a *App) Run(port string) error {
 	}
 
 	go func() {
-		if err := a.httpServer.ListenAndServe(); err != nil {
+		if err := app.httpServer.ListenAndServe(); err != nil {
 			log.Fatalf("Failed to listen and serve: %+v", err)
 		}
 	}()
@@ -59,7 +59,7 @@ func (a *App) Run(port string) error {
 	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdown()
 
-	return a.httpServer.Shutdown(ctx)
+	return app.httpServer.Shutdown(ctx)
 }
 
 func initDB() *mongo.Database {

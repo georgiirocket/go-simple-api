@@ -50,3 +50,22 @@ func (r Repository) GetUser(ctx context.Context, username string) (*schemas.User
 
 	return user, nil
 }
+
+func (r Repository) GetUserById(ctx context.Context, id string) (*schemas.User, error) {
+	objectId, err := bson.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := new(schemas.User)
+	err = r.db.FindOne(ctx, bson.M{
+		"_id": objectId,
+	}).Decode(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

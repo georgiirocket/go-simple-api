@@ -12,5 +12,6 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, repository *Repository) {
 	{
 		authEndpoints.POST("/sign-up", middleware.Validate[SignInput](), controller.SignUp)
 		authEndpoints.POST("/sign-in", middleware.Validate[SignInput](), controller.SignIn)
+		authEndpoints.POST("/refresh-tokens", middleware.Validate[RefreshInput](), controller.RefreshToken)
 	}
 }

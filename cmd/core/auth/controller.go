@@ -7,6 +7,7 @@ import (
 	"go-simple-api/utils/models"
 	"go-simple-api/utils/services"
 	"net/http"
+	"strings"
 )
 
 type Controller struct {
@@ -88,13 +89,69 @@ func (c *Controller) SignIn(context *gin.Context) {
 		return
 	}
 
-	authData, errAuth := services.CreateAuthData(user.ID.Hex())
+	payload, err := services.CreateAuthData(user.ID.Hex())
 
-	if errAuth != nil {
-		context.AbortWithStatusJSON(exception.NewServerError(errAuth.Error()))
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewServerError(err.Error()))
 
 		return
 	}
 
-	context.JSON(http.StatusCreated, SignInResponse{Auth: *authData, User: user.ToModel()})
+	context.JSON(http.StatusCreated, SignInResponse{Auth: *payload, User: user.ToModel()})
+}
+
+type RefreshInput struct {
+	AccessToken string `json:"accessToken" validate:"required,min=10"`
+}
+
+func (c *Controller) RefreshToken(context *gin.Context) {
+	data, err := helpers.GetContextData[RefreshInput](context)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewBadRequestError("Read json"))
+
+		return
+	}
+
+	authorization := context.GetHeader("Authorization")
+
+	if authorization == "" {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Unauthorized"))
+
+		return
+	}
+
+	token := strings.Split(authorization, " ")
+
+	if len(token) != 2 || token[0] != "Bearer" {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Invalid authorization header format"))
+
+		return
+	}
+
+	payload, err := services.VerifyRefreshToken(token[1], data.AccessToken)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError(err.Error()))
+
+		return
+	}
+
+	user, err := c.repository.GetUserById(context, payload.UserId)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Unauthorized"))
+
+		return
+	}
+
+	newPayload, err := services.CreateAuthData(user.ID.Hex())
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewServerError(err.Error()))
+
+		return
+	}
+
+	context.JSON(http.StatusCreated, newPayload)
 }
