@@ -3,5 +3,5 @@ package models
 type UserModel struct {
 	ID        string `json:"id"`
 	Username  string `json:"username"`
-	CreatedAt string `json:"created_at"`
+	CreatedAt string `json:"createdAt"`
 }

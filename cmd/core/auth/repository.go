@@ -12,7 +12,7 @@ type Repository struct {
 	db *mongo.Collection
 }
 
-func NewAuthRepository(db *mongo.Database, collection string) *Repository {
+func NewRepository(db *mongo.Database, collection string) *Repository {
 	return &Repository{
 		db: db.Collection(collection),
 	}

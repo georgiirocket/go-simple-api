@@ -26,16 +26,14 @@ type SignInput struct {
 }
 
 // SignUp
-// @Summary get new  tokens
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param request body SignInput true "data"
-// @Success 200 {object} models.UserModel
+// @Success 201 {object} models.UserModel
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Security BearerAuth
 // @Router       /api/auth/sign-up [post]
 func (c *Controller) SignUp(context *gin.Context) {
 	data, err := helpers.GetContextData[SignInput](context)
@@ -76,6 +74,16 @@ type SignInResponse struct {
 	Auth models.AuthData  `json:"auth"`
 }
 
+// SignIn
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param request body SignInput true "data"
+// @Success 201 {object} SignInResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router       /api/auth/sign-in [post]
 func (c *Controller) SignIn(context *gin.Context) {
 	data, err := helpers.GetContextData[SignInput](context)
 
@@ -116,6 +124,16 @@ type RefreshInput struct {
 	AccessToken string `json:"accessToken" validate:"required,min=10"`
 }
 
+// RefreshToken
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param request body RefreshInput true "data"
+// @Success 201 {object} models.AuthData
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router       /api/auth/refresh-tokens [post]
 func (c *Controller) RefreshToken(context *gin.Context) {
 	data, err := helpers.GetContextData[RefreshInput](context)
 

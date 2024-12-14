@@ -28,7 +28,7 @@ func NewApp() *App {
 	db := initDB()
 
 	return &App{
-		authRepository: auth.NewAuthRepository(db, "users"),
+		authRepository: auth.NewRepository(db, "users"),
 	}
 }
 

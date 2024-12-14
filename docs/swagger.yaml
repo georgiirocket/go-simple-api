@@ -1,4 +1,19 @@
 definitions:
+  auth.RefreshInput:
+    properties:
+      accessToken:
+        minLength: 10
+        type: string
+    required:
+    - accessToken
+    type: object
+  auth.SignInResponse:
+    properties:
+      auth:
+        $ref: '#/definitions/models.AuthData'
+      user:
+        $ref: '#/definitions/models.UserModel'
+    type: object
   auth.SignInput:
     properties:
       password:
@@ -10,6 +25,17 @@ definitions:
     required:
     - password
     - username
+    type: object
+  models.AuthData:
+    properties:
+      accessExpire:
+        type: integer
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
+        type: string
     type: object
   models.ErrorResponse:
     properties:
@@ -28,6 +54,70 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/auth/refresh-tokens:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.AuthData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Auth
+  /api/auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SignInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.SignInResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Auth
   /api/auth/sign-up:
     post:
       consumes:
@@ -42,8 +132,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.UserModel'
         "400":
@@ -58,9 +148,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: get new  tokens
       tags:
       - Auth
 swagger: "2.0"

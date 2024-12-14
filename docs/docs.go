@@ -15,13 +15,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/sign-up": {
+        "/api/auth/refresh-tokens": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -31,7 +26,56 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "get new  tokens",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.AuthData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/sign-in": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
                 "parameters": [
                     {
                         "description": "data",
@@ -44,8 +88,58 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/auth.SignInResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/sign-up": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.SignInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.UserModel"
                         }
@@ -73,6 +167,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "auth.RefreshInput": {
+            "type": "object",
+            "required": [
+                "accessToken"
+            ],
+            "properties": {
+                "accessToken": {
+                    "type": "string",
+                    "minLength": 10
+                }
+            }
+        },
+        "auth.SignInResponse": {
+            "type": "object",
+            "properties": {
+                "auth": {
+                    "$ref": "#/definitions/models.AuthData"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.UserModel"
+                }
+            }
+        },
         "auth.SignInput": {
             "type": "object",
             "required": [
@@ -87,6 +204,23 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "minLength": 5
+                }
+            }
+        },
+        "models.AuthData": {
+            "type": "object",
+            "properties": {
+                "accessExpire": {
+                    "type": "integer"
+                },
+                "accessToken": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "integer"
+                },
+                "refreshToken": {
+                    "type": "string"
                 }
             }
         },
