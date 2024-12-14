@@ -6,8 +6,10 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-simple-api/cmd/core/auth"
+	"go-simple-api/cmd/core/post"
 	"go-simple-api/config"
 	"go-simple-api/docs"
+	"go-simple-api/utils/constants"
 	"go-simple-api/utils/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -22,13 +24,15 @@ type App struct {
 	httpServer *http.Server
 
 	authRepository *auth.Repository
+	postRepository *post.Repository
 }
 
 func NewApp() *App {
 	db := initDB()
 
 	return &App{
-		authRepository: auth.NewRepository(db, "users"),
+		authRepository: auth.NewRepository(db, constants.Collections.User),
+		postRepository: post.NewRepository(db, constants.Collections.Post),
 	}
 }
 
@@ -44,6 +48,7 @@ func (app *App) Run(port string) error {
 	api := router.Group("/api")
 
 	auth.RegisterHTTPEndpoints(api, app.authRepository)
+	post.RegisterHTTPEndpoints(api, app.postRepository)
 
 	// HTTP Server
 	app.httpServer = &http.Server{

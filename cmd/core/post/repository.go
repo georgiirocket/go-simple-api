@@ -2,7 +2,6 @@ package post
 
 import (
 	"context"
-	"go-simple-api/utils/models"
 	"go-simple-api/utils/schemas"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -87,7 +86,8 @@ func (r Repository) GetPostById(ctx context.Context, postId string) (*schemas.Po
 	return entity, nil
 }
 
-func (r Repository) UpdatePost(ctx context.Context, postId, title, description string) (*schemas.Post, error) {
+func (r Repository) UpdatePost(ctx context.Context, userId, postId, title, description string) (*schemas.Post, error) {
+	userObjectId, err := bson.ObjectIDFromHex(userId)
 	objectId, err := bson.ObjectIDFromHex(postId)
 
 	if err != nil {
@@ -95,7 +95,7 @@ func (r Repository) UpdatePost(ctx context.Context, postId, title, description s
 	}
 
 	entity := new(schemas.Post)
-	filter := bson.M{"_id": objectId}
+	filter := bson.M{"_id": objectId, "user_id": userObjectId}
 	update := bson.M{"$set": bson.M{"title": title, "description": description, "updated_at": time.Now()}}
 
 	err = r.db.FindOneAndUpdate(ctx, filter, update).Decode(entity)
@@ -107,7 +107,8 @@ func (r Repository) UpdatePost(ctx context.Context, postId, title, description s
 	return entity, nil
 }
 
-func (r Repository) DeletePost(ctx context.Context, postId string) (*schemas.Post, error) {
+func (r Repository) DeletePost(ctx context.Context, userId, postId string) (*schemas.Post, error) {
+	userObjectId, err := bson.ObjectIDFromHex(userId)
 	objectId, err := bson.ObjectIDFromHex(postId)
 
 	if err != nil {
@@ -116,20 +117,11 @@ func (r Repository) DeletePost(ctx context.Context, postId string) (*schemas.Pos
 
 	entity := new(schemas.Post)
 
-	err = r.db.FindOneAndDelete(ctx, bson.M{"_id": objectId}).Decode(entity)
+	err = r.db.FindOneAndDelete(ctx, bson.M{"_id": objectId, "user_id": userObjectId}).Decode(entity)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return entity, nil
-}
-
-func ArrayToModal(arr []*schemas.Post) []models.PostModel {
-	var m []models.PostModel
-	for _, entity := range arr {
-		m = append(m, entity.ToModel())
-	}
-
-	return m
 }

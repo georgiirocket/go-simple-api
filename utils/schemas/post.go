@@ -25,3 +25,12 @@ func (u *Post) ToModel() models.PostModel {
 		CreatedAt:   u.CreatedAt.Format(time.RFC3339),
 	}
 }
+
+func PostsToModels(arr []*Post) []models.PostModel {
+	var m []models.PostModel
+	for _, entity := range arr {
+		m = append(m, entity.ToModel())
+	}
+
+	return m
+}
