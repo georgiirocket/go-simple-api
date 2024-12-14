@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"go-simple-api/libs/models"
+	"go-simple-api/utils/models"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"time"
@@ -31,12 +31,12 @@ func VerifyPassword(password string, hash string) bool {
 }
 
 // CreateAuthData . access 3h refresh 7days
-func CreateAuthData(userId string, role string) (*models.AuthData, error) {
+func CreateAuthData(userId string) (*models.AuthData, error) {
 	accessExpire := time.Now().Add(time.Duration(3) * time.Hour).Unix()
 	expiresIn := time.Now().Add(time.Duration(168) * time.Hour).Unix()
 	authData := models.AuthData{AccessExpire: accessExpire, ExpiresIn: expiresIn}
 
-	accessToken, errAccessToken := createAccessToken(&models.AuthPayload{UserId: userId, Role: role, TokenType: AccessTokenType, Exp: accessExpire})
+	accessToken, errAccessToken := createAccessToken(&models.AuthPayload{UserId: userId, TokenType: AccessTokenType, Exp: accessExpire})
 
 	if errAccessToken != nil {
 		return nil, errAccessToken
@@ -46,7 +46,7 @@ func CreateAuthData(userId string, role string) (*models.AuthData, error) {
 
 	partAccessToken := accessToken[len(accessToken)-8:]
 
-	refreshToken, errRefreshToken := createRefreshToken(&models.AuthPayloadRefresh{UserId: userId, Role: role, TokenType: RefreshTokenType, Exp: expiresIn, PartAccessToken: partAccessToken})
+	refreshToken, errRefreshToken := createRefreshToken(&models.AuthPayloadRefresh{UserId: userId, TokenType: RefreshTokenType, Exp: expiresIn, PartAccessToken: partAccessToken})
 
 	if errRefreshToken != nil {
 		return nil, errRefreshToken
@@ -74,7 +74,6 @@ func VerifyToken(accessToken string, tokenType string) (*models.AuthPayload, err
 
 	payload := &models.AuthPayload{
 		UserId:    claims["userId"].(string),
-		Role:      claims["role"].(string),
 		TokenType: claims["tokenType"].(string),
 		Exp:       int64(claims["exp"].(float64)),
 	}
@@ -99,7 +98,6 @@ func VerifyRefreshToken(refreshToken string, accessToken string) (*models.AuthPa
 
 	payload := &models.AuthPayloadRefresh{
 		UserId:          claims["userId"].(string),
-		Role:            claims["role"].(string),
 		TokenType:       claims["tokenType"].(string),
 		PartAccessToken: claims["partAccessToken"].(string),
 		Exp:             int64(claims["exp"].(float64)),
@@ -118,7 +116,6 @@ func createAccessToken(auth *models.AuthPayload) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userId":    auth.UserId,
-			"role":      auth.Role,
 			"tokenType": auth.TokenType,
 			"exp":       auth.Exp,
 		})
@@ -136,7 +133,6 @@ func createRefreshToken(auth *models.AuthPayloadRefresh) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userId":          auth.UserId,
-			"role":            auth.Role,
 			"tokenType":       auth.TokenType,
 			"partAccessToken": auth.PartAccessToken,
 			"exp":             auth.Exp,

@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-simple-api/libs/exception"
-	"go-simple-api/libs/services"
+	"go-simple-api/utils/exception"
+	"go-simple-api/utils/services"
 	"strings"
 )
 
@@ -11,8 +11,7 @@ func AccessGuard(context *gin.Context) {
 	authorization := context.GetHeader("Authorization")
 
 	if authorization == "" {
-		exception.AuthError(context, "Unauthorized")
-		context.Abort()
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Unauthorized"))
 
 		return
 	}
@@ -20,8 +19,7 @@ func AccessGuard(context *gin.Context) {
 	token := strings.Split(authorization, " ")
 
 	if len(token) != 2 || token[0] != "Bearer" {
-		exception.AuthError(context, "Invalid authorization header format")
-		context.Abort()
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Invalid authorization header format"))
 
 		return
 	}
@@ -29,8 +27,7 @@ func AccessGuard(context *gin.Context) {
 	authData, err := services.VerifyToken(token[1], services.AccessTokenType)
 
 	if err != nil {
-		exception.AuthError(context, err.Error())
-		context.Abort()
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError(err.Error()))
 
 		return
 	}

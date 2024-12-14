@@ -2,6 +2,11 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-simple-api/utils/exception"
+	"go-simple-api/utils/helpers"
+	"go-simple-api/utils/models"
+	"go-simple-api/utils/services"
+	"net/http"
 )
 
 type Controller struct {
@@ -14,49 +19,82 @@ func NewController(r *Repository) *Controller {
 	}
 }
 
-type signInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type SignInput struct {
+	Username string `json:"username" validate:"required,min=5"`
+	Password string `json:"password" validate:"required,min=10"`
 }
 
-func (h *Controller) SignUp(c *gin.Context) {
-	//inp := new(signInput)
-	//
-	//if err := c.BindJSON(inp); err != nil {
-	//	c.AbortWithStatus(http.StatusBadRequest)
-	//	return
-	//}
-	//
-	//if err := h.useCase.SignUp(c.Request.Context(), inp.Username, inp.Password); err != nil {
-	//	c.AbortWithStatus(http.StatusInternalServerError)
-	//	return
-	//}
-	//
-	//c.Status(http.StatusOK)
+func (c *Controller) SignUp(context *gin.Context) {
+	data, err := helpers.GetContextData[SignInput](context)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewBadRequestError(err.Error()))
+
+		return
+	}
+
+	user, _ := c.repository.GetUser(context, data.Username)
+
+	if user != nil {
+		context.AbortWithStatusJSON(exception.NewBadRequestError("Chose another username"))
+
+		return
+	}
+
+	hash, err := services.CreateHashPassword(data.Password)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewServerError("Create password"))
+	}
+
+	newUser, err := c.repository.CreateUser(context, data.Username, hash)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewServerError("When creating user"))
+
+		return
+	}
+
+	context.JSON(http.StatusCreated, newUser.ToModel())
 }
 
-type signInResponse struct {
-	Token string `json:"token"`
+type SignInResponse struct {
+	User models.UserModel `json:"user"`
+	Auth models.AuthData  `json:"auth"`
 }
 
-func (h *Controller) SignIn(c *gin.Context) {
-	//inp := new(signInput)
-	//
-	//if err := c.BindJSON(inp); err != nil {
-	//	c.AbortWithStatus(http.StatusBadRequest)
-	//	return
-	//}
-	//
-	//token, err := h.useCase.SignIn(c.Request.Context(), inp.Username, inp.Password)
-	//if err != nil {
-	//	if err == auth.ErrUserNotFound {
-	//		c.AbortWithStatus(http.StatusUnauthorized)
-	//		return
-	//	}
-	//
-	//	c.AbortWithStatus(http.StatusInternalServerError)
-	//	return
-	//}
-	//
-	//c.JSON(http.StatusOK, signInResponse{Token: token})
+func (c *Controller) SignIn(context *gin.Context) {
+	data, err := helpers.GetContextData[SignInput](context)
+
+	if err != nil {
+		context.AbortWithStatusJSON(exception.NewBadRequestError("Read json"))
+
+		return
+	}
+
+	user, _ := c.repository.GetUser(context, data.Username)
+
+	if user == nil {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Check your credentials"))
+
+		return
+	}
+
+	isVerifyPassword := services.VerifyPassword(data.Password, user.Password)
+
+	if !isVerifyPassword {
+		context.AbortWithStatusJSON(exception.NewUnauthorizedError("Check your credentials"))
+
+		return
+	}
+
+	authData, errAuth := services.CreateAuthData(user.ID.Hex())
+
+	if errAuth != nil {
+		context.AbortWithStatusJSON(exception.NewServerError(errAuth.Error()))
+
+		return
+	}
+
+	context.JSON(http.StatusCreated, SignInResponse{Auth: *authData, User: user.ToModel()})
 }

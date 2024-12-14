@@ -10,14 +10,12 @@ type AuthData struct {
 type AuthPayload struct {
 	TokenType string
 	UserId    string
-	Role      string
 	Exp       int64
 }
 
 type AuthPayloadRefresh struct {
 	TokenType       string
 	UserId          string
-	Role            string
 	Exp             int64
 	PartAccessToken string
 }

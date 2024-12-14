@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"go-simple-api/cmd/core/auth"
+	"go-simple-api/config"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
@@ -24,7 +24,7 @@ func NewApp() *App {
 	db := initDB()
 
 	return &App{
-		authRepository: auth.NewAuthRepository(db, viper.GetString("mongo.user_collection")),
+		authRepository: auth.NewAuthRepository(db, "users"),
 	}
 }
 
@@ -63,7 +63,7 @@ func (a *App) Run(port string) error {
 }
 
 func initDB() *mongo.Database {
-	clientOptions := options.Client().ApplyURI(os.Getenv(viper.GetString("mongo.uri")))
+	clientOptions := options.Client().ApplyURI(config.Env.MongoUrl)
 	client, err := mongo.Connect(clientOptions)
 
 	if err != nil {
@@ -78,5 +78,5 @@ func initDB() *mongo.Database {
 		log.Fatal(err)
 	}
 
-	return client.Database(viper.GetString("mongo.name"))
+	return client.Database(config.Env.DbName)
 }

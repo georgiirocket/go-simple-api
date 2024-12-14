@@ -3,19 +3,18 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"go-simple-api/libs/exception"
+	"go-simple-api/utils/exception"
 	"net/http"
 )
 
-func ValidateBy[T any]() gin.HandlerFunc {
+func Validate[T any]() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var data T
 
 		errorReadJson := context.ShouldBindJSON(&data)
 
 		if errorReadJson != nil {
-			exception.BadRequestError(context, "Read json")
-			context.Abort()
+			context.AbortWithStatusJSON(exception.NewBadRequestError("Read json"))
 
 			return
 		}
@@ -25,8 +24,7 @@ func ValidateBy[T any]() gin.HandlerFunc {
 		validateErrors := validate.Struct(&data)
 
 		if validateErrors != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": validateErrors.Error()})
-			context.Abort()
+			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": validateErrors.Error()})
 
 			return
 		}

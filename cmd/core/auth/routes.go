@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-simple-api/utils/middleware"
 )
 
 func RegisterHTTPEndpoints(router *gin.RouterGroup, repository *Repository) {
@@ -9,7 +10,7 @@ func RegisterHTTPEndpoints(router *gin.RouterGroup, repository *Repository) {
 
 	authEndpoints := router.Group("/auth")
 	{
-		authEndpoints.POST("/sign-up", controller.SignUp)
-		authEndpoints.POST("/sign-in", controller.SignIn)
+		authEndpoints.POST("/sign-up", middleware.Validate[SignInput](), controller.SignUp)
+		authEndpoints.POST("/sign-in", middleware.Validate[SignInput](), controller.SignIn)
 	}
 }

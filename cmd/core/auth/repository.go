@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"go-simple-api/libs/schemas"
+	"go-simple-api/utils/schemas"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"time"

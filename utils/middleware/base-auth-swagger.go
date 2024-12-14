@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"os"
+	"go-simple-api/config"
 )
 
 func BaseAuthSwagger() gin.HandlerFunc {
-	user := os.Getenv("SWAGGER_USER")
-	password := os.Getenv("SWAGGER_PASSWORD")
+	user := config.Env.SwaggerUser
+	password := config.Env.SwaggerPassword
 
 	return gin.BasicAuth(gin.Accounts{user: password})
 }

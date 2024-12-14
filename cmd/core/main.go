@@ -1,20 +1,17 @@
 package main
 
 import (
-	"github.com/spf13/viper"
 	"go-simple-api/config"
-	"go-simple-api/libs/server"
+	"go-simple-api/utils/server"
 	"log"
 )
 
 func main() {
-	if err := config.Init(); err != nil {
-		log.Fatalf("%s", err.Error())
-	}
+	config.Init()
 
 	app := server.NewApp()
 
-	if err := app.Run(viper.GetString("port")); err != nil {
+	if err := app.Run(config.Env.AppPort); err != nil {
 		log.Fatalf("%s", err.Error())
 	}
 }
