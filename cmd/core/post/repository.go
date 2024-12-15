@@ -5,6 +5,7 @@ import (
 	"go-simple-api/utils/schemas"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"time"
 )
 
@@ -18,14 +19,14 @@ func NewRepository(db *mongo.Database, collection string) *Repository {
 	}
 }
 
-func newPost(userId, title, description string) (*schemas.Post, error) {
+func newPost(userId, title, description string) (schemas.Post, error) {
 	objectId, err := bson.ObjectIDFromHex(userId)
 
 	if err != nil {
-		return nil, err
+		return schemas.Post{}, err
 	}
 
-	newPost := &schemas.Post{
+	newPost := schemas.Post{
 		ID:          bson.NewObjectID(),
 		Title:       title,
 		Description: description,
@@ -43,17 +44,17 @@ func (r Repository) CreatePost(ctx context.Context, userId, title, description s
 		return nil, err
 	}
 
-	_, err = r.db.InsertOne(ctx, err)
+	_, err = r.db.InsertOne(ctx, entity)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return entity, nil
+	return &entity, nil
 }
 
 func (r Repository) GetPosts(ctx context.Context) ([]*schemas.Post, error) {
-	var entities []*schemas.Post
+	var entities = make([]*schemas.Post, 0)
 
 	cursor, err := r.db.Find(ctx, bson.M{})
 
@@ -97,8 +98,9 @@ func (r Repository) UpdatePost(ctx context.Context, userId, postId, title, descr
 	entity := new(schemas.Post)
 	filter := bson.M{"_id": objectId, "user_id": userObjectId}
 	update := bson.M{"$set": bson.M{"title": title, "description": description, "updated_at": time.Now()}}
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	err = r.db.FindOneAndUpdate(ctx, filter, update).Decode(entity)
+	err = r.db.FindOneAndUpdate(ctx, filter, update, opts).Decode(entity)
 
 	if err != nil {
 		return nil, err

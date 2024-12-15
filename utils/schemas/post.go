@@ -27,7 +27,7 @@ func (u *Post) ToModel() models.PostModel {
 }
 
 func PostsToModels(arr []*Post) []models.PostModel {
-	var m []models.PostModel
+	var m = make([]models.PostModel, 0)
 	for _, entity := range arr {
 		m = append(m, entity.ToModel())
 	}

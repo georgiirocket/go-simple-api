@@ -83,7 +83,7 @@ func (c *Controller) GetPosts(context *gin.Context) {
 // @Success 200 {object} models.PostModel
 // @Failure 404 {object} models.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/post/view [get]
+// @Router       /api/post/view/{postId} [get]
 func (c *Controller) GetPost(context *gin.Context) {
 	postId := context.Param("postId")
 	post, err := c.repository.GetPostById(context, postId)
@@ -98,8 +98,8 @@ func (c *Controller) GetPost(context *gin.Context) {
 }
 
 type UpdatePostInput struct {
-	Title       string `json:"title" validate:"min=5"`
-	Description string `json:"description" validate:"min=5"`
+	Title       string `json:"title" validate:"omitempty,min=5"`
+	Description string `json:"description" validate:"omitempty,min=5"`
 }
 
 // UpdatePost
@@ -108,12 +108,12 @@ type UpdatePostInput struct {
 // @Produce      json
 // @Param        postId   path      string  true  "Post ID"
 // @Param request body UpdatePostInput true "data"
-// @Success 204 {object} models.PostModel
+// @Success 200 {object} models.PostModel
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/post/update [patch]
+// @Router       /api/post/update/{postId} [patch]
 func (c *Controller) UpdatePost(context *gin.Context) {
 	postId := context.Param("postId")
 
@@ -151,7 +151,7 @@ func (c *Controller) UpdatePost(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusNoContent, updatedPost.ToModel())
+	context.JSON(http.StatusOK, updatedPost.ToModel())
 }
 
 // DeletePost
@@ -163,7 +163,7 @@ func (c *Controller) UpdatePost(context *gin.Context) {
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/post/delete [delete]
+// @Router       /api/post/delete/{postId} [delete]
 func (c *Controller) DeletePost(context *gin.Context) {
 	postId := context.Param("postId")
 
