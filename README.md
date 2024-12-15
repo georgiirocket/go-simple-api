@@ -1,4 +1,4 @@
-## Go simple api
+## Simple api
 
 Implementation api (Golang)
 
@@ -62,6 +62,55 @@ If you want to test endpoints. You can import this file in Postman
 ## Structure
 
 ```
+.
+├── Dockerfile
+├── Makefile
+├── README.md
+├── cmd
+│   └── core
+│       ├── auth
+│       │   ├── controller.go
+│       │   ├── repository.go
+│       │   └── routes.go
+│       ├── main.go
+│       └── post
+│           ├── controller.go
+│           ├── repository.go
+│           └── routes.go
+├── config
+│   └── init.go
+├── docker-compose.yml
+├── docs
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
+├── go.mod
+├── go.sum
+└── utils
+    ├── constants
+    │   ├── collections.go
+    │   └── error-messages.go
+    ├── exception
+    │   └── exception.go
+    ├── helpers
+    │   ├── get-context-data.go
+    │   └── get-context-userid.go
+    ├── middleware
+    │   ├── base-auth-swagger.go
+    │   ├── guard.go
+    │   └── validator.go
+    ├── models
+    │   ├── auth.go
+    │   ├── error.go
+    │   ├── post.go
+    │   └── user.go
+    ├── schemas
+    │   ├── post.go
+    │   └── user.go
+    ├── server
+    │   └── app.go
+    └── services
+        └── auth.go
 
 ```
 
