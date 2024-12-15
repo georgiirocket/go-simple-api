@@ -57,7 +57,7 @@ swag init -g ./cmd/core/main.go -o docs
 
 If you want to test endpoints. You can import this file in Postman
 
-- Test
+- go-simple-api.postman_collection.json
 
 ## Structure
 

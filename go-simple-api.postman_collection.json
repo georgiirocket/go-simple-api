@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "71e546c8-1744-4ab2-9329-6d71b559c51c",
+		"name": "go-simple-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14222084"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "sign-up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testOne\",\n    \"password\": \"12345678910\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth}}/sign-up",
+							"host": [
+								"{{auth}}"
+							],
+							"path": [
+								"sign-up"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sign-in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testOne\",\n    \"password\": \"12345678910\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth}}/sign-in",
+							"host": [
+								"{{auth}}"
+							],
+							"path": [
+								"sign-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh-tokens",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzQ3OTAyNTcsInBhcnRBY2Nlc3NUb2tlbiI6ImZHSVh1dkxvIiwidG9rZW5UeXBlIjoicmVmcmVzaCIsInVzZXJJZCI6IjY3NWQ4NjBlYTE2YzU5YjBjOGZjMWZiZiJ9.Jfw3_z9L1-lX828qMbPtaw_cGLcJbmXxNSP-uE4KO08",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzQxOTYyNTcsInRva2VuVHlwZSI6ImFjY2VzcyIsInVzZXJJZCI6IjY3NWQ4NjBlYTE2YzU5YjBjOGZjMWZiZiJ9.f4QL1cl1NHtlnDAkaRDqqXoL7zJnKGHaXOFfGIXuvLo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth}}/refresh-tokens",
+							"host": [
+								"{{auth}}"
+							],
+							"path": [
+								"refresh-tokens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "post",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{post}}/list",
+							"host": [
+								"{{post}}"
+							],
+							"path": [
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Master\",\n    \"description\": \"Hello world\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{post}}/create",
+							"host": [
+								"{{post}}"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "view",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{post}}/view/675e206fe2b151fc99ef74a1",
+							"host": [
+								"{{post}}"
+							],
+							"path": [
+								"view",
+								"675e206fe2b151fc99ef74a1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Super master\",\n    \"description\": \"Hello world\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{post}}/update/675e206fe2b151fc99ef74a1",
+							"host": [
+								"{{post}}"
+							],
+							"path": [
+								"update",
+								"675e206fe2b151fc99ef74a1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{post}}/delete/675e206fe2b151fc99ef74a1",
+							"host": [
+								"{{post}}"
+							],
+							"path": [
+								"delete",
+								"675e206fe2b151fc99ef74a1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzQyMzE3NDgsInRva2VuVHlwZSI6ImFjY2VzcyIsInVzZXJJZCI6IjY3NWQ4NjBlYTE2YzU5YjBjOGZjMWZiZiJ9.KTzB7PCupGIO2KM59pmZtVb2yX8nAlhziFqKDli3hPg",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "auth",
+			"value": "http://localhost:3000/api/auth",
+			"type": "string"
+		},
+		{
+			"key": "post",
+			"value": "http://localhost:3000/api/post",
+			"type": "string"
+		}
+	]
+}
